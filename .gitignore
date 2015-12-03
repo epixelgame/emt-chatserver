@@ -4,3 +4,4 @@ src/Makefile
 Makefile
 bin
 build
+emt-chatserver.*
