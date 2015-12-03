@@ -182,6 +182,14 @@ static void init_config()
 			}
 			config.bind_port = root["bind_port"].asInt();
 		}
+
+		if (root.isMember("auth_token")) {
+			if (!root["auth_token"].isString()) {
+				logger.fatal("Config error: auth_token option should be an string");
+				exit(1);
+			}
+			config.auth_token = root["auth_token"].asString();
+		}
 	}
 	else {
 		logger.notice("No configuration file found. Default settings loaded.");

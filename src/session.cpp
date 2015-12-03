@@ -39,7 +39,7 @@ bool Session::handle_Auth(const NetworkMessage &msg)
 			auth_token = msg.data["auth_token"].asString();
 
 	if (auth_token.compare(config.auth_token) != 0) {
-		logger.error("Server %s tried to connect but failed auth.");
+		logger.error("Server %s tried to connect but failed auth.", server_name.c_str());
 		return false;
 	}
 
