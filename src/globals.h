@@ -23,7 +23,17 @@
 #include <log4cpp/Category.hh>
 #include <pthread.h>
 #include <apr-1/apr_pools.h>
+#include "cs_types.h"
 
+struct configReceptacle
+{
+	std::string auth_token = "";
+	u16 bind_port = 30500;
+	std::string bind_addr = "0.0.0.0";
+	bool daemonize = false;
+};
+
+extern configReceptacle config;
 extern log4cpp::Category& logger;
 
 extern apr_pool_t *g_apr_pool;

@@ -29,8 +29,7 @@ namespace epixel
 #define POOLSET_SIZE 32
 #define SOCKET_BUFFER_SIZE 4096
 
-ChatServer::ChatServer(const std::string &addr, const unsigned short port):
-		m_bind_addr(addr), m_bind_port(port)
+ChatServer::ChatServer()
 {
 	m_session_mgr = new SessionManager();
 	m_packet_handler = new PacketHandler();
@@ -49,7 +48,7 @@ void ChatServer::start()
 	apr_pool_create(&m_apr_pool, g_apr_pool);
 
 	if (startListening() != APR_SUCCESS) {
-		logger.fatal("Failed to listen to TCP socket %s:%d", m_bind_addr.c_str(), m_bind_port);
+		logger.fatal("Failed to listen to TCP socket %s:%d", config.bind_addr.c_str(), config.bind_port);
 		return;
 	}
 
@@ -65,7 +64,7 @@ void ChatServer::start()
 		apr_pollset_add(m_pollset, &pfd);
 	}
 
-	logger.notice("ChatServer now listens on %s:%d", m_bind_addr.c_str(), m_bind_port);
+	logger.notice("ChatServer now listens on %s:%d", config.bind_addr.c_str(), config.bind_port);
 
 	while (!m_should_stop) {
 		rv = apr_pollset_poll(m_pollset, APR_USEC_PER_SEC * 30, &num, &ret_pfd);
@@ -299,7 +298,7 @@ const apr_status_t ChatServer::startListening()
 {
 	apr_status_t rv;
 	apr_sockaddr_t *sa;
-	rv = apr_sockaddr_info_get(&sa, NULL, APR_INET, m_bind_port, 0, m_apr_pool);
+	rv = apr_sockaddr_info_get(&sa, NULL, APR_INET, config.bind_port, 0, m_apr_pool);
 	if (rv != APR_SUCCESS) {
 		return rv;
 	}

@@ -29,8 +29,8 @@ namespace epixel
 
 bool Session::handle_Auth(const NetworkMessage &msg)
 {
-	if (!msg.data.isMember("server_name") ||
-			!msg.data.isMember("auth_token")) {
+	if (!msg.data.isMember("server_name") || !msg.data["server_name"].isString() ||
+			!msg.data.isMember("auth_token") || !msg.data["auth_token"].isString()) {
 		logger.error("Invalid auth message received from session %d", m_id);
 		return false;
 	}
@@ -45,10 +45,19 @@ bool Session::handle_Auth(const NetworkMessage &msg)
 	return true;
 }
 
+/**
+ * @brief Session::handle_ChatMessage
+ * @param msg
+ * @return false if message is invalid, else true
+ *
+ * This a message sent from a server from a player.
+ * This message should contain author, message and channel string fields
+ */
 bool Session::handle_ChatMessage(const NetworkMessage &msg)
 {
-	if (!msg.data.isMember("author") ||
-			!msg.data.isMember("message")) {
+	if (!msg.data.isMember("author") || !msg.data["author"].isString() ||
+			!msg.data.isMember("message") || !msg.data["message"].isString() ||
+			!msg.data.isMember("channel") || !msg.data["channel"].isString()) {
 		logger.error("Invalid chat message received from session %d", m_id);
 		return false;
 	}

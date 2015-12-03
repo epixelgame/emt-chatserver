@@ -41,7 +41,7 @@ struct ChatMessage
 
 class ChatServer {
 public:
-	ChatServer(const std::string &addr, const unsigned short port);
+	ChatServer();
 	~ChatServer();
 
 	void stop();
@@ -65,8 +65,6 @@ private:
 
 	apr_socket_t *m_sock;
 	apr_pollset_t *m_pollset;
-	std::string m_bind_addr = "";
-	unsigned short m_bind_port = 0;
 
 	SessionManager* m_session_mgr;
 	PacketHandler* m_packet_handler;
