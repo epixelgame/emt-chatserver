@@ -38,6 +38,11 @@ bool Session::handle_Auth(const NetworkMessage &msg)
 	std::string server_name = msg.data["server_name"].asString(),
 			auth_token = msg.data["auth_token"].asString();
 
+	if (auth_token.compare(config.auth_token) != 0) {
+		logger.error("Server %s tried to connect but failed auth.");
+		return false;
+	}
+
 	m_servername = server_name;
 
 	logger.info("Servername: %s, auth_token: %s", server_name.c_str(), auth_token.c_str());
