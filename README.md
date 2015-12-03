@@ -3,6 +3,7 @@ A chatserver broadcasting messages incoming from some sources to subscribers
 
 # Dependencies
 ## List of dependencies
+* gcc 5.0 or greater / clang 3.4 or greater
 * cmake
 * apr (Apache Portable Runtime)
 * log4cpp
