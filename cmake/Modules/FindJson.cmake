@@ -12,5 +12,6 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(JSONCPP DEFAULT_MSG JSON_LIBRARY JSON_INCLUDE_DIR)
 
 if(JSONCPP_FOUND)
-	message(STATUS "Using system JSONCPP library.")
+	message(STATUS "Found jsoncpp headers ${JSON_INCLUDE_DIR}")
+	message(STATUS "Found jsoncpp library ${JSON_LIBRARY}")
 endif()
