@@ -19,7 +19,6 @@
 #include <json/json.h>
 #include <unistd.h>
 #include "chatserver.h"
-#include "compress.h"
 #include "globals.h"
 #include "packethandler.h"
 #include "session.h"
@@ -194,9 +193,6 @@ void ChatServer::handleReceiveData(const apr_pollfd_t *pfd)
 			break;
 		}
 	}
-
-	//std::string uncompressed_s;
-	//emt::lz4_decompress(recv_s, uncompressed_s);
 
 	Json::Value root;
 	Json::Reader reader;
