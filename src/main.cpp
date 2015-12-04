@@ -161,7 +161,7 @@ static void init_config()
 		try {
 			config_f >> root;
 		}
-		catch (Json::RuntimeError &e) {
+		catch (std::exception &e) {
 			logger.fatal("Invalid configuration file '%s'. Ensure this is a wellformed JSON file.",
 					config_file.c_str());
 			exit(1);
