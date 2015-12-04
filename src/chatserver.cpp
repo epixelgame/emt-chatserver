@@ -19,9 +19,11 @@
 #include <json/json.h>
 #include <unistd.h>
 #include "chatserver.h"
+#include "compress.h"
 #include "globals.h"
 #include "packethandler.h"
 #include "session.h"
+#include "util.h"
 
 namespace epixel
 {
@@ -99,131 +101,160 @@ void ChatServer::start()
 	apr_socket_close(m_sock);
 }
 
-void ChatServer::handleReceiveData(const apr_pollfd_t *pfd)
+bool ChatServer::isSocketValid(const apr_pollfd_t *pfd, Session* sess)
 {
 	EpixelServerSession* fddatas = (EpixelServerSession*)pfd->client_data;
 	apr_socket_t* p_sock = pfd->desc.s;
 
+	int sock_atroeaf = 0;
+	// Check if socket is always valid
+	apr_status_t rv = apr_socket_atreadeof(p_sock, &sock_atroeaf);
+	if (sock_atroeaf != 0) {
+		logger.notice("%s is disconnected. Closing socket.", getIPFromSock(p_sock));
+		if (sess) {
+			m_session_mgr->destroySession(fddatas->session_id);
+		}
+		apr_pollset_remove(m_pollset, pfd);
+		apr_socket_close(p_sock);
+		return false;
+	}
+
+	return true;
+}
+
+void ChatServer::handleReceiveData(const apr_pollfd_t *pfd)
+{
+	EpixelServerSession* fddatas = (EpixelServerSession*)pfd->client_data;
+	apr_socket_t* p_sock = pfd->desc.s;
+	Session* sess = m_session_mgr->getSession(fddatas->session_id);
+
+	std::string recv_s = "";
+	unsigned int packet_size_to_recv = 0;
 	while (true) {
 		// Read socket
 		char buf[SOCKET_BUFFER_SIZE];
-		apr_size_t len = sizeof(buf) - 1;
+		apr_size_t len = sizeof(buf);
 		// Init buffer
 		memset(buf, 0, len);
-		int sock_atroeaf = 0;
 
-		Session* sess = m_session_mgr->getSession(fddatas->session_id);
-
-		// Check if socket is always valid
-		apr_status_t rv = apr_socket_atreadeof(p_sock, &sock_atroeaf);
-		if (sock_atroeaf != 0) {
-			logger.notice("%s is disconnected. Closing socket.", getIPFromSock(p_sock));
-			if (sess) {
-				m_session_mgr->destroySession(fddatas->session_id);
-			}
-			apr_pollset_remove(m_pollset, pfd);
-			apr_socket_close(p_sock);
+		if (!isSocketValid(pfd, sess)) {
 			return;
 		}
 
+		// If packet_size_to_recv == 0, we should read the packet size
+		if (packet_size_to_recv == 0) {
+			apr_size_t header_len = 4;
+			// receive datas
+			apr_status_t rv = apr_socket_recv(p_sock, buf, &header_len);
+			if (rv == APR_EOF || header_len < 4) {
+				logger.warn("Invalid packet header received from %s. Closing socket.", getIPFromSock(p_sock));
+				if (sess) {
+					m_session_mgr->destroySession(fddatas->session_id);
+				}
+				apr_pollset_remove(m_pollset, pfd);
+				apr_socket_close(p_sock);
+				return;
+			}
+
+			packet_size_to_recv = readUInt(buf);
+
+			// Reinit buf
+			memset(buf, 0, len);
+		}
+
+		if (!isSocketValid(pfd, sess)) {
+			return;
+		}
+
+		if (len > packet_size_to_recv) {
+			len = packet_size_to_recv;
+		}
+
 		// receive datas
-		rv = apr_socket_recv(p_sock, buf, &len);
-		if (rv == APR_EOF || len == 0) {
+		apr_status_t rv = apr_socket_recv(p_sock, buf, &len);
+
+		// Store them to outbuffer
+		recv_s.append(buf, len);
+
+		// And decrement size to read
+		packet_size_to_recv -= len;
+		if (rv == APR_EOF || len == 0 || packet_size_to_recv <= 0) {
+			packet_size_to_recv = 0;
 			// Nothing more to read on the socket, exiting the loop
 			break;
 		}
-		buf[len] = '\0';
+	}
 
-		// Transform requests to proper dissociate JSON requests
-		std::vector<std::string> json_requests = {};
+	//std::string uncompressed_s;
+	//emt::lz4_decompress(recv_s, uncompressed_s);
 
-		{
-			std::string s = "";
-			for (u16 i = 0; i < SOCKET_BUFFER_SIZE; i++) {
-				s.push_back(buf[i]);
-				if (buf[i] == '\0') {
-					json_requests.push_back(s);
-					s = "";
-					// If next is also a null char, reading is finished
-					if (i+1 < SOCKET_BUFFER_SIZE && buf[i+1] == '\0') {
-						break;
-					}
-				}
-			}
+	Json::Value root;
+	Json::Reader reader;
+	if (!reader.parse(recv_s, root, false) || !root["o"].isInt() || !root["data"].isObject()) {
+		logger.error("Invalid JSON received from %s, ignoring and closing connection.", getIPFromSock(p_sock));
+		if (sess) {
+			m_session_mgr->destroySession(fddatas->session_id);
 		}
+		apr_pollset_remove(m_pollset, pfd);
+		apr_socket_close(p_sock);
+		return;
+	}
 
-		for (const auto &s: json_requests) {
-			logger.debug("Read request: %s", s.c_str());
+	u16 opcode = root["o"].asInt();
 
-			Json::Value root;
-			Json::Reader reader;
-			if (!reader.parse(s, root, false) || !root["o"].isInt() || !root["data"].isObject()) {
-				logger.error("Invalid JSON received from %s, ignoring and closing connection.", getIPFromSock(p_sock));
-				if (sess) {
-					m_session_mgr->destroySession(fddatas->session_id);
-				}
-				apr_pollset_remove(m_pollset, pfd);
-				apr_socket_close(p_sock);
-				return;
-			}
-
-			u16 opcode = root["o"].asInt();
-
-			if (!m_packet_handler->isValidOpcode(opcode)) {
-				logger.error("Invalid opcode %d received from %s, ignoring and closing connection.",
-						opcode, getIPFromSock(p_sock));
-				if (sess) {
-					m_session_mgr->destroySession(fddatas->session_id);
-				}
-				apr_pollset_remove(m_pollset, pfd);
-				apr_socket_close(p_sock);
-				return;
-			}
-
-			// Read message
-			NetworkMessage* msg = new NetworkMessage(fddatas->session_id, opcode);
-			msg->data = root["data"];
-
-			if (!sess) {
-				logger.warn("No session found for %s, ignoring and closing connection.", getIPFromSock(p_sock));
-				apr_pollset_remove(m_pollset, pfd);
-				apr_socket_close(p_sock);
-				delete msg;
-				return;
-			}
-
-			// Handle packet which needs to not be auth there
-			if (m_packet_handler->packetNeedsUnauth(msg->opcode)) {
-				logger.debug("Packet (unauth) with opcode %d sent to packet handler", msg->opcode);
-				if (!m_packet_handler->handlePacket(sess, *msg)) {
-					logger.info("Packet was handled but content is invalid, disconnecting peer %s", getIPFromSock(p_sock));
-					m_session_mgr->destroySession(fddatas->session_id);
-					apr_pollset_remove(m_pollset, pfd);
-					apr_socket_close(p_sock);
-				}
-				delete msg;
-				// Message was okay, process other messages
-				continue;
-			}
-			// else drop session & connection if auth is required and session isn't
-			else if (sess->getState() == SESSION_NOT_AUTH) {
-				logger.warn("Packet received without valid session opened, ignoring and closing connection.", getIPFromSock(p_sock));
-				m_session_mgr->destroySession(fddatas->session_id);
-				apr_pollset_remove(m_pollset, pfd);
-				apr_socket_close(p_sock);
-				delete msg;
-				return;
-			}
-
-			logger.debug("Packet (auth) with opcode %d sent to packet handler", msg->opcode);
-			if (!m_packet_handler->handlePacket(sess, *msg)) {
-				logger.info("Packet was handled but content is invalid, disconnecting peer %s", getIPFromSock(p_sock));
-				m_session_mgr->destroySession(fddatas->session_id);
-				apr_pollset_remove(m_pollset, pfd);
-				apr_socket_close(p_sock);
-				return;
-			}
+	if (!m_packet_handler->isValidOpcode(opcode)) {
+		logger.error("Invalid opcode %d received from %s, ignoring and closing connection.",
+				opcode, getIPFromSock(p_sock));
+		if (sess) {
+			m_session_mgr->destroySession(fddatas->session_id);
 		}
+		apr_pollset_remove(m_pollset, pfd);
+		apr_socket_close(p_sock);
+		return;
+	}
+
+	// Read message
+	NetworkMessage* msg = new NetworkMessage(fddatas->session_id, opcode);
+	msg->data = root["data"];
+
+	if (!sess) {
+		logger.warn("No session found for %s, ignoring and closing connection.", getIPFromSock(p_sock));
+		apr_pollset_remove(m_pollset, pfd);
+		apr_socket_close(p_sock);
+		delete msg;
+		return;
+	}
+
+	// Handle packet which needs to not be auth there
+	if (m_packet_handler->packetNeedsUnauth(msg->opcode)) {
+		logger.debug("Packet (unauth) with opcode %d sent to packet handler", msg->opcode);
+		if (!m_packet_handler->handlePacket(sess, *msg)) {
+			logger.info("Packet was handled but content is invalid, disconnecting peer %s", getIPFromSock(p_sock));
+			m_session_mgr->destroySession(fddatas->session_id);
+			apr_pollset_remove(m_pollset, pfd);
+			apr_socket_close(p_sock);
+		}
+		delete msg;
+		// Message was okay, process other messages
+		return;
+	}
+	// else drop session & connection if auth is required and session isn't
+	else if (sess->getState() == SESSION_NOT_AUTH) {
+		logger.warn("Packet received without valid session opened, ignoring and closing connection.", getIPFromSock(p_sock));
+		m_session_mgr->destroySession(fddatas->session_id);
+		apr_pollset_remove(m_pollset, pfd);
+		apr_socket_close(p_sock);
+		delete msg;
+		return;
+	}
+
+	logger.debug("Packet (auth) with opcode %d sent to packet handler", msg->opcode);
+	if (!m_packet_handler->handlePacket(sess, *msg)) {
+		logger.info("Packet was handled but content is invalid, disconnecting peer %s", getIPFromSock(p_sock));
+		m_session_mgr->destroySession(fddatas->session_id);
+		apr_pollset_remove(m_pollset, pfd);
+		apr_socket_close(p_sock);
+		return;
 	}
 }
 

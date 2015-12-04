@@ -19,6 +19,27 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
+#if HAVE_ENDIAN_H
+	#include <endian.h>
+
+inline unsigned int readUInt(const char *data)
+{
+	unsigned int val;
+	memcpy(&val, data, 4);
+	return be32toh(val);
+}
+
+#else
+
+inline unsigned int readUInt(const char *data)
+{
+	return
+		((unsigned int)data[0] << 24) | ((unsigned int)data[1] << 16) |
+		((unsigned int)data[2] <<  8) | ((unsigned int)data[3] <<  0);
+}
+
+#endif
+
 namespace filesystem
 {
 

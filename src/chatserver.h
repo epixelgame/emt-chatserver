@@ -26,6 +26,7 @@ namespace epixel
 
 struct NetworkMessage;
 class PacketHandler;
+class Session;
 class SessionManager;
 
 struct EpixelServerSession
@@ -57,6 +58,7 @@ private:
 
 	// Socket
 	const apr_status_t startListening();
+	bool isSocketValid(const apr_pollfd_t *pfd, epixel::Session* sess);
 	void handlePeerAccept();
 	void handleReceiveData(const apr_pollfd_t* pfd);
 	void sendQueuedDatas(const apr_pollfd_t* pfd_out);
