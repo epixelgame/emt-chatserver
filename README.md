@@ -11,11 +11,11 @@ A chatserver broadcasting messages incoming from some sources to subscribers
 
 ## Fetch deps on Debian/Ubuntu
 
-	apt-get install liblog4cpp5-dev libjsoncpp-dev libapr1-dev
+	apt-get install liblog4cpp5-dev libjsoncpp-dev libapr1-dev liblz4-dev
 
 ## Fetch deps on FreeBSD
 
-	pkg install log4cpp jsoncpp apr
+	pkg install log4cpp jsoncpp apr liblz4
 
 # How to build
 	mkdir build
