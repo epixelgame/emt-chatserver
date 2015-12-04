@@ -25,6 +25,8 @@
 #include <apr-1/apr_pools.h>
 #include "cs_types.h"
 
+#define MAX_ALLOWED_PACKET_SIZE 1024
+
 struct configReceptacle
 {
 	std::string auth_token = "";

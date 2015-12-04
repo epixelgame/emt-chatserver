@@ -29,7 +29,7 @@ namespace epixel
 {
 
 #define POOLSET_SIZE 32
-#define SOCKET_BUFFER_SIZE 4096
+#define SOCKET_BUFFER_SIZE 1536
 
 ChatServer::ChatServer()
 {
@@ -157,6 +157,16 @@ void ChatServer::handleReceiveData(const apr_pollfd_t *pfd)
 			}
 
 			packet_size_to_recv = readUInt(buf);
+
+			if (packet_size_to_recv > MAX_ALLOWED_PACKET_SIZE) {
+				logger.warn("Server %s wants to send us a very large packet (size: %d). Closing socket.", getIPFromSock(p_sock), packet_size_to_recv);
+				if (sess) {
+					m_session_mgr->destroySession(fddatas->session_id);
+				}
+				apr_pollset_remove(m_pollset, pfd);
+				apr_socket_close(p_sock);
+				return;
+			}
 
 			// Reinit buf
 			memset(buf, 0, len);
