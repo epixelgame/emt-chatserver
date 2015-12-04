@@ -58,7 +58,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 # Modules
 find_library(APR_LIBRARY REQUIRED)
 find_package("Apr")
-find_library(APRUTIL_LIBRARY REQUIRED)
 
 find_library(LZ4_LIBRARY REQUIRED)
 find_package("Lz4")
