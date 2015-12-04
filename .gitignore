@@ -1,4 +1,5 @@
 CMakeFiles/*
+src/CMakeFiles/*
 CMakeCache.txt
 src/Makefile
 Makefile
@@ -6,3 +7,5 @@ bin
 build
 emt-chatserver.*
 config.json
+*.cmake
+src/*.cmake
