@@ -16,33 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef __UTIL_H__
-#define __UTIL_H__
+#ifndef __COMPRESS_H__
+#define __COMPRESS_H__
 
-namespace filesystem
+#include <string>
+
+namespace emt
 {
 
-#ifdef _WIN32 // WINDOWS
+void lz4_compress(const std::string &source, std::string &dest);
+void lz4_decompress(const std::string &source, std::string &dest);
 
-#define _WIN32_WINNT 0x0501
-#include <windows.h>
-#include <shlwapi.h>
-
-inline bool path_exists(const std::string &path)
-{
-	return (GetFileAttributes(path.c_str()) != INVALID_FILE_ATTRIBUTES);
-}
-
-#else
-
-inline bool path_exists(const std::string &path)
-{
-	struct stat st;
-	return (stat(path.c_str(),&st) == 0);
-}
-
-#endif
-
-} // end namespace filesystem
+} // end namespace emt
 
 #endif

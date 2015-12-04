@@ -16,33 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef __UTIL_H__
-#define __UTIL_H__
+#include "compress.h"
+#include <lz4.h>
 
-namespace filesystem
+namespace emt
 {
 
-#ifdef _WIN32 // WINDOWS
-
-#define _WIN32_WINNT 0x0501
-#include <windows.h>
-#include <shlwapi.h>
-
-inline bool path_exists(const std::string &path)
+void lz4_compress(const std::string &source, std::string &dest)
 {
-	return (GetFileAttributes(path.c_str()) != INVALID_FILE_ATTRIBUTES);
+        int str_s = source.size();
+        char* buffer = new char[LZ4_compressBound(str_s)];
+        int s = LZ4_compress(source.c_str(), buffer, str_s);
+        dest = std::string(buffer,s);
+        delete [] buffer;
 }
 
-#else
-
-inline bool path_exists(const std::string &path)
+void lz4_decompress(const std::string &source, std::string &dest)
 {
-	struct stat st;
-	return (stat(path.c_str(),&st) == 0);
+        int maxLZ4bufferSize = source.size() * 255;
+        char* buffer =  new char[maxLZ4bufferSize];
+        int s = LZ4_decompress_safe(source.c_str(), buffer,
+                source.size(), maxLZ4bufferSize);
+
+        dest = std::string(buffer, s);
+        delete [] buffer;
 }
 
-#endif
-
-} // end namespace filesystem
-
-#endif
+} // end namespace emt

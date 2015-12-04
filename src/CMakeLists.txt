@@ -1,5 +1,6 @@
 set(project_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/chatserver.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/compress.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/packethandler.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/session.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
