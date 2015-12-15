@@ -228,6 +228,12 @@ int main(int argc, char *argv[])
 
 	init_config();
 
+	uid_t uid = getuid();
+	if (uid == 0) {
+		logger.emerg("emt-chatserver doesn't accept to run as root user. Exiting.");
+		exit(1);
+	}
+
 	pid_t pid = 0;
 	if (config.daemonize) {
 		pid = fork();
