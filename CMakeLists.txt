@@ -121,31 +121,15 @@ if(NOT CUSTOM_EXAMPLE_CONF_DIR STREQUAL "")
 	message(STATUS "Using EXAMPLE_CONF_DIR=${EXAMPLE_CONF_DIR}")
 endif()
 
-set(CUSTOM_XDG_APPS_DIR "" CACHE STRING "Directory to install .desktop files into")
-if(NOT CUSTOM_XDG_APPS_DIR STREQUAL "")
-	set(XDG_APPS_DIR "${CUSTOM_XDG_APPS_DIR}")
-	message(STATUS "Using XDG_APPS_DIR=${XDG_APPS_DIR}")
-endif()
-
 set(CUSTOM_ICONDIR "" CACHE STRING "Directory to install icons into")
 if(NOT CUSTOM_ICONDIR STREQUAL "")
 	set(ICONDIR "${CUSTOM_ICONDIR}")
 	message(STATUS "Using ICONDIR=${ICONDIR}")
 endif()
 
-set(CUSTOM_LOCALEDIR "" CACHE STRING "Directory to install l10n files into")
-if(NOT CUSTOM_LOCALEDIR STREQUAL "")
-	set(LOCALEDIR "${CUSTOM_LOCALEDIR}")
-	message(STATUS "Using LOCALEDIR=${LOCALEDIR}")
-endif()
-
-
 install(FILES "README.md" DESTINATION "${DOCDIR}")
-install(FILES "emt-server.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
-
-if(UNIX AND NOT APPLE)
-	install(FILES "doc/emt-server.6" DESTINATION "${MANDIR}/man6")
-endif()
+install(FILES "conf/config.json.example" DESTINATION "${EXAMPLE_CONF_DIR}")
+install(FILES "conf/log4cpp.properties.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
 # Subdirectories
 # Be sure to add all relevant definitions above this

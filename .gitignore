@@ -9,3 +9,5 @@ emt-chatserver.*
 config.json
 *.cmake
 src/*.cmake
+epixel.log
+log4cpp.properties
