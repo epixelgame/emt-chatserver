@@ -12,8 +12,10 @@
 
 . /etc/rc.subr
 
-name="emt-chatserver"
+name="emt_chatserver"
 rcvar=emt_chatserver_enable
+
+load_rc_config $name
 
 : ${emt_chatserver_enable="NO"}
 : ${emt_chatserver_user="www"}
@@ -21,11 +23,8 @@ rcvar=emt_chatserver_enable
 : ${emt_chatserver_log_file="/var/log/emt-chatserver.log"}
 : ${emt_chatserver_config="/usr/local/etc/emt-chatserver/config.json"}
 
-command=/usr/local/bin/${name}
+command=/usr/local/bin/emt-chatserver
 command_args="-c ${emt_chatserver_config} -d"
-
-load_rc_config $name
-
 
 start_precmd="emt_chatserver_prestart"
 
