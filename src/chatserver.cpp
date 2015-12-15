@@ -29,6 +29,7 @@ namespace epixel
 
 #define POOLSET_SIZE 32
 #define SOCKET_BUFFER_SIZE 1536
+#define HEADER_LEN 4
 
 ChatServer::ChatServer()
 {
@@ -142,10 +143,10 @@ void ChatServer::handleReceiveData(const apr_pollfd_t *pfd)
 
 		// If packet_size_to_recv == 0, we should read the packet size
 		if (packet_size_to_recv == 0) {
-			apr_size_t header_len = 4;
+			apr_size_t header_len = HEADER_LEN;
 			// receive datas
 			apr_status_t rv = apr_socket_recv(p_sock, buf, &header_len);
-			if (rv == APR_EOF || header_len < 4) {
+			if (rv == APR_EOF || header_len < HEADER_LEN) {
 				logger.warn("Invalid packet header received from %s. Closing socket.", getIPFromSock(p_sock));
 				if (sess) {
 					m_session_mgr->destroySession(fddatas->session_id);
