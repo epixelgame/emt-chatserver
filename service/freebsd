@@ -15,10 +15,26 @@
 name="emt-chatserver"
 rcvar=emt_chatserver_enable
 
+: ${emt_chatserver_enable="NO"}
+: ${emt_chatserver_user="www"}
+: ${emt_chatserver_group="www"}
+: ${emt_chatserver_log_file="/var/log/emt-chatserver.log"}
+: ${emt_chatserver_config="/usr/local/etc/emt-chatserver/config.json"}
+
 command=/usr/local/bin/${name}
+command_args="-c ${emt_chatserver_config} -d"
 
 load_rc_config $name
 
-: ${emt_chatserver_enable="NO"}
+
+start_precmd="emt_chatserver_prestart"
+
+emt_chatserver_prestart() {
+	if [ ! -f "${emt_chatserver_log_file}" ]; then
+		touch "${emt_chatserver_log_file}"
+		chown "${emt_chatserver_user}:${emt_chatserver_group}" "${emt_chatserver_log_file}"
+		chmod 640 "${emt_chatserver_log_file}"
+	fi
+}
 
 run_rc_command "$1"
