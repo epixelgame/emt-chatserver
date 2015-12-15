@@ -8,6 +8,8 @@ set(project_SRCS
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 include_directories(
+	/usr/include
+	/usr/local/include
         ${CMAKE_BUILD_TYPE}
         ${JSON_INCLUDE_DIR}
         ${APR_INCLUDE_DIR}
