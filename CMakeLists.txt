@@ -114,16 +114,20 @@ if(NOT CUSTOM_EXAMPLE_CONF_DIR STREQUAL "")
 	message(STATUS "Using EXAMPLE_CONF_DIR=${EXAMPLE_CONF_DIR}")
 endif()
 
-install(FILES "README.md" DESTINATION "${DOCDIR}")
-install(FILES "README.md" DESTINATION "${DOCDIR}")
-install(FILES "conf/config.json.example" DESTINATION "${EXAMPLE_CONF_DIR}")
-install(FILES "conf/log4cpp.properties.example" DESTINATION "${EXAMPLE_CONF_DIR}")
-
 # Subdirectories
 # Be sure to add all relevant definitions above this
 
 add_subdirectory(src)
 
+install(FILES "README.md" DESTINATION "${DOCDIR}")
+install(FILES "conf/config.json.example" DESTINATION "${EXAMPLE_CONF_DIR}")
+install(FILES "conf/log4cpp.properties.example" DESTINATION "${EXAMPLE_CONF_DIR}")
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+	install(FILES "service/freebsd" DESTINATION "/usr/local/etc/rc.d" RENAME "emt-chatserver")
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
+	install(FILES "service/openbsd" DESTINATION "/etc/rc.d" RENAME "emt-chatserver")
+endif()
 
 # CPack
 

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# PROVIDE: emt-chatserver
+# REQUIRE: LOGIN
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# emt_chatserver_enable (bool): Set to NO by default.
+#               Set it to YES to enable emt-chatserver.
+#
+
+. /etc/rc.subr
+
+name="emt-chatserver"
+rcvar=emt_chatserver_enable
+
+command=/usr/local/bin/${name}
+
+load_rc_config $name
+
+: ${emt_chatserver_enable="NO"}
+
+run_rc_command "$1"
