@@ -24,3 +24,5 @@ target_link_libraries(
 	${JSON_LIBRARY}
 	${LOG4CPP_LIBRARY}
 )
+
+install(TARGETS ${PROJECT_NAME} DESTINATION ${BINDIR})
