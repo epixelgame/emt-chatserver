@@ -124,9 +124,17 @@ install(FILES "conf/config.json.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 install(FILES "conf/log4cpp.properties.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-	install(FILES "service/freebsd" DESTINATION "/usr/local/etc/rc.d" RENAME "emt-chatserver")
+	install(FILES "service/freebsd"
+		DESTINATION "/usr/local/etc/rc.d"
+		PERMISSIONS OWNER_EXECUTE OWNER_READ
+			GROUP_READ
+		RENAME "emt-chatserver")
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
-	install(FILES "service/openbsd" DESTINATION "/etc/rc.d" RENAME "emt-chatserver")
+	install(FILES "service/openbsd"
+		DESTINATION "/etc/rc.d"
+		PERMISSIONS OWNER_EXECUTE OWNER_READ
+			GROUP_READ
+		RENAME "emt-chatserver")
 endif()
 
 # CPack
