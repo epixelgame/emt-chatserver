@@ -5,6 +5,6 @@ log4cpp.appender.rootAppender.layout=PatternLayout
 log4cpp.appender.rootAppender.layout.ConversionPattern=%d [%p] %m%n
 
 log4cpp.appender.rootFA=FileAppender
-log4cpp.appender.rootFA.fileName=epixel.log
+log4cpp.appender.rootFA.fileName=/var/log/emt-chatserver.log
 log4cpp.appender.rootFA.layout=PatternLayout
 log4cpp.appender.rootFA.layout.ConversionPattern=%d [%p] %m%n
