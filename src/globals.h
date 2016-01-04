@@ -30,7 +30,7 @@
 struct configReceptacle
 {
 	std::string auth_token = "";
-	u16 bind_port = 30500;
+	u16 bind_port = 30050;
 	std::string bind_addr = "0.0.0.0";
 	bool daemonize = false;
 };
