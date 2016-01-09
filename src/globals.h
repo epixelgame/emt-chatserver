@@ -1,6 +1,6 @@
 /*
  * Epixel
- * Copyright (C) 2015-2016  nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+ * Copyright (C) 2015-2016 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef __GLOBALS_H__
-#define __GLOBALS_H__
+#pragma once
 
 #include <string>
 #include <log4cpp/Category.hh>
 #include <pthread.h>
 #include <apr-1/apr_pools.h>
-#include "cs_types.h"
+#include <stdint.h>
 
 #define MAX_ALLOWED_PACKET_SIZE 1024
 
 struct configReceptacle
 {
 	std::string auth_token = "";
-	u16 bind_port = 30050;
+	uint16_t bind_port = 30050;
 	std::string bind_addr = "0.0.0.0";
 	bool daemonize = false;
 };
@@ -39,5 +38,3 @@ extern configReceptacle config;
 extern log4cpp::Category& logger;
 
 extern apr_pool_t *g_apr_pool;
-
-#endif

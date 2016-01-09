@@ -1,6 +1,6 @@
 /*
  * Epixel
- * Copyright (C) 2015-2016  nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+ * Copyright (C) 2015-2016 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+#pragma once
 #include <queue>
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_poll.h>
-#include "cs_types.h"
+#include <stdint.h>
 
 namespace epixel
 {
@@ -31,7 +32,7 @@ class SessionManager;
 
 struct EpixelServerSession
 {
-	int session_id = 0;
+	int32_t session_id = 0;
 };
 
 struct ChatMessage

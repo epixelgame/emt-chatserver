@@ -207,7 +207,7 @@ void ChatServer::handleReceiveData(const apr_pollfd_t *pfd)
 		return;
 	}
 
-	u16 opcode = root["o"].asInt();
+	uint16_t opcode = root["o"].asInt();
 
 	if (!m_packet_handler->isValidOpcode(opcode)) {
 		logger.error("Invalid opcode %d received from %s, ignoring and closing connection.",

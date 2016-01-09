@@ -1,6 +1,6 @@
 /*
  * Epixel
- * Copyright (C) 2015-2016  nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+ * Copyright (C) 2015-2016 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,12 +39,12 @@ const std::vector<PacketHandlerEntry> packetHandlingTable = {
 	{ "CHATMSG", SESSION_AUTH, &Session::handle_ChatMessage },
 };
 
-bool PacketHandler::isValidOpcode(const u16 opcode) const
+bool PacketHandler::isValidOpcode(const uint16_t opcode) const
 {
 	return (opcode < packetHandlingTable.size() && packetHandlingTable[opcode].handler);
 }
 
-bool PacketHandler::packetNeedsUnauth(const u16 opcode) const
+bool PacketHandler::packetNeedsUnauth(const uint16_t opcode) const
 {
 	return (packetHandlingTable[opcode].state == SESSION_NOT_AUTH);
 }

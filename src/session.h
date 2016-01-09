@@ -1,6 +1,6 @@
 /*
  * Epixel
- * Copyright (C) 2015-2016  nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+ * Copyright (C) 2015-2016 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+#pragma once
 #include <apr-1/apr_poll.h>
 #include <json/json.h>
 #include <queue>
@@ -53,7 +54,7 @@ public:
 	inline void setPfdOut(const apr_pollfd_t pfd_out) { m_pfd_out = pfd_out; }
 	inline apr_pollfd_t* getPfdIn() { return &m_pfd_in; }
 private:
-	int m_id = 0;
+	int32_t m_id = 0;
 	std::string m_servername = "";
 	SessionState m_state = SESSION_NOT_AUTH;
 	SessionManager* m_mgr;
@@ -72,7 +73,7 @@ public:
 	~SessionManager();
 
 	// Session management
-	int createSession(ChatServer* cs);
+	int32_t createSession(ChatServer* cs);
 	void destroySession(const int id);
 	Session* getSession(const int id);
 	void broadcastToOthers(Session* source, const Json::Value& what) const;

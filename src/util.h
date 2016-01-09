@@ -16,26 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef __UTIL_H__
-#define __UTIL_H__
+#pragma once
+
+#include <stdint.h>
 
 #if HAVE_ENDIAN_H
 	#include <endian.h>
 
-inline unsigned int readUInt(const char *data)
+inline uint32_t readUInt(const char *data)
 {
-	unsigned int val;
+	uint32_t val;
 	memcpy(&val, data, 4);
 	return be32toh(val);
 }
 
 #else
 
-inline unsigned int readUInt(const char *data)
+inline uint32_t readUInt(const char *data)
 {
 	return
-		((unsigned int)data[0] << 24) | ((unsigned int)data[1] << 16) |
-		((unsigned int)data[2] <<  8) | ((unsigned int)data[3] <<  0);
+		((uint32_t)data[0] << 24) | ((uint32_t)data[1] << 16) |
+		((uint32_t)data[2] <<  8) | ((uint32_t)data[3] <<  0);
 }
 
 #endif
@@ -66,4 +67,3 @@ inline bool path_exists(const std::string &path)
 
 } // end namespace filesystem
 
-#endif
