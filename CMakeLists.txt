@@ -1,18 +1,12 @@
 cmake_minimum_required(VERSION 2.8.10)
 
-if(${CMAKE_VERSION} STREQUAL "2.8.2")
-	# Bug http://vtk.org/Bug/view.php?id=11020
-	message(WARNING "CMake/CPack version 2.8.2 will not create working .deb packages!")
-endif()
-
 # This can be read from ${PROJECT_NAME} after project() is called
 project(emt-chatserver)
 set(PROJECT_NAME_CAPITALIZED "EMT-chatserver")
 
-# Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
-set(VERSION_MAJOR 0)
-set(VERSION_MINOR 4)
-set(VERSION_PATCH 13)
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 1)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
