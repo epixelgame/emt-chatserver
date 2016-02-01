@@ -35,8 +35,9 @@ const std::vector<PacketHandlerEntry> packetHandlingTable = {
 	nullPacketHandlerEntry,
 	nullPacketHandlerEntry,
 	nullPacketHandlerEntry,
-	{ "AUTH", SESSION_NOT_AUTH, &Session::handle_Auth },
-	{ "CHATMSG", SESSION_AUTH, &Session::handle_ChatMessage },
+	{ "CMSG_AUTH", SESSION_NOT_AUTH, &Session::handle_Auth },
+	{ "CMSG_CHATMSG", SESSION_AUTH, &Session::handle_ChatMessage },
+	{ "SMSG_CHATMSG", SESSION_NOT_AUTH, nullptr }
 };
 
 bool PacketHandler::isValidOpcode(const uint16_t opcode) const

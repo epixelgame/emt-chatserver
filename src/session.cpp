@@ -68,12 +68,17 @@ bool Session::handle_ChatMessage(const NetworkMessage &msg)
 	}
 
 	Json::Value response = msg.data;
-	response["servername"] = m_servername;
+	response["server_name"] = m_servername;
+
 	logger.notice("Message | %s@%s | %s",
 			response["author"].asString().c_str(),
-			response["servername"].asString().c_str(),
+			response["server_name"].asString().c_str(),
 			response["message"].asString().c_str());
-	m_mgr->broadcastToOthers(this, response);
+
+	Json::Value root_json;
+	root_json["o"] = 5;
+	root_json["data"] = response;
+	m_mgr->broadcastToOthers(this, root_json);
 
 	return true;
 }

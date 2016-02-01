@@ -92,7 +92,7 @@ void ChatServer::start()
 #ifdef _WIN32
 		sleep_ms(1);
 #else
-		usleep(50);
+		usleep(10);
 #endif
 	}
 
