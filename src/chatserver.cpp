@@ -308,7 +308,7 @@ const apr_status_t ChatServer::sendPacket(apr_socket_t* sock, const std::string&
     buf.append(data.data(), lenStr);
 
     // Send datas
-    return apr_socket_send(m_sock, buf.data(), &len);
+    return apr_socket_send(sock, buf.data(), &len);
 }
 
 void ChatServer::handlePeerAccept()
