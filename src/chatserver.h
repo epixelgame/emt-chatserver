@@ -63,6 +63,7 @@ private:
 	void handlePeerAccept();
 	void handleReceiveData(const apr_pollfd_t* pfd);
 	void sendQueuedDatas(const apr_pollfd_t* pfd_out);
+	const apr_status_t sendPacket(apr_socket_t* sock, const std::string& data);
 
 	const char* getIPFromSock(apr_socket_t *p_sock);
 

@@ -30,6 +30,12 @@ inline uint32_t readUInt(const char *data)
 	return be32toh(val);
 }
 
+inline void writeUInt(uint8_t *data, uint32_t i)
+{
+	uint32_t val = htobe32(i);
+	memcpy(data, &val, 4);
+}
+
 #else
 
 inline uint32_t readUInt(const char *data)
@@ -37,6 +43,14 @@ inline uint32_t readUInt(const char *data)
 	return
 		((uint32_t)data[0] << 24) | ((uint32_t)data[1] << 16) |
 		((uint32_t)data[2] <<  8) | ((uint32_t)data[3] <<  0);
+}
+
+inline void writeUInt(uint8_t *data, uint32_t i)
+{
+	data[0] = (i >> 24) & 0xFF;
+	data[1] = (i >> 16) & 0xFF;
+	data[2] = (i >>  8) & 0xFF;
+	data[3] = (i >>  0) & 0xFF;
 }
 
 #endif

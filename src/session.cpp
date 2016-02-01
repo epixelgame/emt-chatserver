@@ -74,7 +74,7 @@ bool Session::handle_ChatMessage(const NetworkMessage &msg)
 	return true;
 }
 
-void Session::sendMessage(const Json::Value &what)
+void Session::queueMessage(const Json::Value &what)
 {
 	Json::FastWriter writer;
 	std::string raw_what = writer.write(what);
@@ -164,7 +164,7 @@ void SessionManager::broadcastToOthers(Session* source, const Json::Value& what)
 			continue;
 		}
 
-		sess.second->sendMessage(what);
+		sess.second->queueMessage(what);
 	}
 }
 

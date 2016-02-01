@@ -45,7 +45,7 @@ public:
 	bool handle_ChatMessage(const NetworkMessage &msg);
 
 	// Senders
-	void sendMessage(const Json::Value &what);
+	void queueMessage(const Json::Value &what);
 	bool consumeQueuedMessage(std::string &what);
 
 	// getters

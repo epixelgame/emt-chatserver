@@ -283,15 +283,32 @@ void ChatServer::sendQueuedDatas(const apr_pollfd_t *pfd_out)
 	logger.debug("Sending datas in queue for session %d - %s", fddatas->session_id, getIPFromSock(p_sock));
 
 	std::string s_message = "";
-	apr_size_t s_message_s;
 	while (sess->consumeQueuedMessage(s_message)) {
-		s_message_s = s_message.size();
-		apr_socket_send(p_sock, s_message.c_str(), &s_message_s);
+		sendPacket(p_sock, s_message);
+		// @TODO handle status here
 	}
 
 	// all datas are sent, close this sender
 	apr_pollset_remove(m_pollset, pfd_out);
 	apr_pollset_add(m_pollset, sess->getPfdIn());
+}
+
+const apr_status_t ChatServer::sendPacket(apr_socket_t* sock, const std::string& data)
+{
+    uint32_t lenStr = data.size();
+
+    // Write header
+    uint8_t hdrBuf[4];
+    writeUInt(hdrBuf, lenStr);
+
+    apr_size_t len = lenStr + 4 * sizeof(uint8_t);
+
+    std::string buf;
+    buf.append((const char*)hdrBuf, 4);
+    buf.append(data.data(), lenStr);
+
+    // Send datas
+    return apr_socket_send(m_sock, buf.data(), &len);
 }
 
 void ChatServer::handlePeerAccept()
