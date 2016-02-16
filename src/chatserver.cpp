@@ -156,7 +156,7 @@ void ChatServer::handleReceiveData(const apr_pollfd_t *pfd)
 				return;
 			}
 
-			packet_size_to_recv = readUInt(buf);
+			packet_size_to_recv = readUInt((unsigned char*)buf);
 
 			if (packet_size_to_recv > MAX_ALLOWED_PACKET_SIZE) {
 				logger.warn("Server %s wants to send us a very large packet (size: %d). Closing socket.", getIPFromSock(p_sock), packet_size_to_recv);
@@ -285,7 +285,6 @@ void ChatServer::sendQueuedDatas(const apr_pollfd_t *pfd_out)
 	std::string s_message = "";
 	while (sess->consumeQueuedMessage(s_message)) {
 		sendPacket(p_sock, s_message);
-		// @TODO handle status here
 	}
 
 	// all datas are sent, close this sender
@@ -295,20 +294,20 @@ void ChatServer::sendQueuedDatas(const apr_pollfd_t *pfd_out)
 
 const apr_status_t ChatServer::sendPacket(apr_socket_t* sock, const std::string& data)
 {
-    uint32_t lenStr = data.size();
+	uint32_t lenStr = data.size();
 
-    // Write header
-    uint8_t hdrBuf[4];
-    writeUInt(hdrBuf, lenStr);
+	// Write header
+	uint8_t hdrBuf[4];
+	writeUInt(hdrBuf, lenStr);
 
-    apr_size_t len = lenStr + 4 * sizeof(uint8_t);
+	apr_size_t len = lenStr + 4 * sizeof(uint8_t);
 
-    std::string buf;
-    buf.append((const char*)hdrBuf, 4);
-    buf.append(data.data(), lenStr);
+	std::string buf;
+	buf.append((const char*)hdrBuf, 4);
+	buf.append(data.data(), lenStr);
 
-    // Send datas
-    return apr_socket_send(sock, buf.data(), &len);
+	// Send datas
+	return apr_socket_send(sock, buf.data(), &len);
 }
 
 void ChatServer::handlePeerAccept()

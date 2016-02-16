@@ -11,6 +11,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("localhost", 30050))
 
 sendPkt(s, '{"o":3,"data":{"auth_token":"12345","server_name":"testserver"}}')
-sendPkt(s, '{"o":4,"data":{"message":"test msg qsdm ld qsd lqsld ","author":"pupol","channel":"main"}}')
+sendPkt(s, '{"o":4,"data":{"message":"zemlzemzlemzlaeazmelamelazmelazmelamzleazmeltest msg qsdm ld qsd lqsld ","author":"pupol","channel":"main"}}')
 
 s.close()

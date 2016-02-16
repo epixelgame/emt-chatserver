@@ -38,7 +38,7 @@ inline void writeUInt(uint8_t *data, uint32_t i)
 
 #else
 
-inline uint32_t readUInt(const char *data)
+inline uint32_t readUInt(const unsigned char *data)
 {
 	return
 		((uint32_t)data[0] << 24) | ((uint32_t)data[1] << 16) |
